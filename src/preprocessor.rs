@@ -119,7 +119,6 @@ enum MacroSession {
     EmptyLine,
 }
 
-#[cfg_attr(rustfmt, rustfmt_skip)] 
 fn macro_line<'a>(input: CompleteStr<'a>, t: &str) -> IResult<CompleteStr<'a>, Identifier> {
     do_parse!(
         input,        
@@ -359,7 +358,7 @@ named!(
     )
 );
 
-#[cfg_attr(rustfmt, rustfmt_skip)] 
+#[rustfmt::skip]
 named!(
     ifcond_macro<CS, MacroSession>, 
     do_parse!(            
@@ -467,7 +466,7 @@ named!(
     )
 );
 
-#[rustfmt_skip] 
+#[rustfmt::skip]
 named!(
     #[allow(unused_imports)],  // fix value! warning
     preprocess_parser <CS,Vec<MacroSession>>,
