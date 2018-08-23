@@ -1,4 +1,5 @@
 #![feature(trace_macros)]
+#![feature(tool_attributes)]
 
 #[macro_use]
 extern crate lazy_static;
