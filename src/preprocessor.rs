@@ -1,5 +1,5 @@
 use nom::types::CompleteStr;
-use nom::{space, Err, IResult};
+use nom::{space, Err, ErrorKind, IResult};
 use nom::line_ending;
 use std::convert::From;
 use std::collections::HashMap;
