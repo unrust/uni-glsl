@@ -358,7 +358,6 @@ named!(
     )
 );
 
-#[rustfmt::skip]
 named!(
     ifcond_macro<CS, MacroSession>, 
     do_parse!(            
@@ -466,7 +465,6 @@ named!(
     )
 );
 
-#[rustfmt::skip]
 named!(
     #[allow(unused_imports)],  // fix value! warning
     preprocess_parser <CS,Vec<MacroSession>>,
