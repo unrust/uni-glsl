@@ -1,57 +1,60 @@
-# unrust
+# unrust / uni-glsl
 
-[![Build Status](https://travis-ci.org/unrust/unrust.svg?branch=master)](https://travis-ci.org/unrust/unrust)
+[![Build Status](https://travis-ci.org/unrust/uni-gl.svg?branch=master)](https://travis-ci.org/unrust/uni-gl)
+[![Documentation](https://docs.rs/uni-gl/badge.svg)](https://docs.rs/uni-gl)
+[![crates.io](https://meritbadge.herokuapp.com/uni-gl)](https://crates.io/crates/uni-gl)
 
-A pure rust based (webgl 2.0 / native) game engine
-
-Current Version : 0.1.1
+This library is a part of [Unrust](https://github.com/unrust/unrust), a pure rust native/wasm game engine.
+This library provides a glsl es 2.0 spec parser, which allow unrust to be able to write GLSL that works for both native and wasm, by support #if, #else #end, #define #include preprocesser in glsl.
 
 **This project is under heavily development, all api are very unstable until version 0.2**
 
-## Live Demo
-
-* [Boxes](https://edwin0cheng.github.io/unrust/demo/boxes)
-* [Sponza](https://edwin0cheng.github.io/unrust/demo/sponza)
-* [Sound](https://edwin0cheng.github.io/unrust/demo/sound)
-* [Post-Processing](https://edwin0cheng.github.io/unrust/demo/postprocessing)
-* [MeshObj](https://edwin0cheng.github.io/unrust/demo/meshobj)
-* [Basic](https://edwin0cheng.github.io/unrust/demo/basic)
-
 ## Usage 
 
-You can reference [basic.rs](https://github.com/edwin0cheng/unrust/blob/master/examples/basic.rs) for now, more documetations will be coming soon.
 
-## Build
+```rust
+extern crate uni_glsl;
 
-### As web app (wasm32-unknown-unknown)
+use uni_glsl::preprocessor;
+use uni_glsl::parser;
+use uni_glsl::TypeQualifier;
+use uni_glsl::BasicType;
 
-The target `wasm32-unknown-unknown` is currently only on the nightly builds as of Jan-30 2018.
+// There are some helper query functions in this module
+use uni_glsl::query::*;
 
+use std::collections::HashMap;
+
+#[test]
+fn test_vs() {
+    let test_text = include_str!("../data/test/phong_vs.glsl");
+
+    let mut predefs = HashMap::new();
+
+    predefs.insert("GL_ES".into(), "".into());
+
+    let preprocessed: String = preprocessor::preprocess(test_text, &predefs, &HashMap::new()).unwrap();
+
+    let unit = parser::parse(&preprocessed).unwrap();
+
+    assert_eq!(unit.func_defs.len(), 1);
+    let main = &unit.func_defs[0];
+    assert_eq!(main.0.name, "main");
+
+    // you can query decl by name and chain to is something.
+    // currently suppoer enun:
+    // TypeQualifier
+    let attr_opt = unit.query_decl("aVertexPosition")
+        .is(TypeQualifier::Attribute);
+
+    assert!(attr_opt.is_some());
+
+    // Some helper function from query trait
+    let attr = attr_opt.unwrap();
+    assert!(*attr.actual_type().unwrap() == BasicType::Vec3);
+
+    // Or you can search for all
+    let decls = unit.query_decl_all(TypeQualifier::Uniform);
+    assert_eq!(decls.len(), 4);
+}
 ```
-cargo install cargo-web # installs web sub command
-rustup override set nightly
-rustup target install wasm32-unknown-unknown
-cargo web start --example boxes --release
-```
-
-### As desktop app (native-opengl)
-
-```
-rustup override set nightly
-cargo run --example boxes --release
-```
-
-## License
-
-Licensed under either of
-
- * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
- * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
-
-at your option.
-
-### Contribution
-
-Unless you explicitly state otherwise, any contribution intentionally submitted
-for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any
-additional terms or conditions.
